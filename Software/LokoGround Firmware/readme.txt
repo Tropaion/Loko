@@ -1,4 +1,3 @@
-
-Loko ground unit use ESP32 module ,  its firmware written on micropython .  
-
-first need to upload micropython package to ESP32 module by using Thonny IDE and the easily upload firmware and run 
+1. Download latest Thonny IDE: https://thonny.org/
+2. Flash latest version of MicroPython with Thonny IDE: https://www.upesy.com/blogs/tutorials/install-micropython-on-esp32-quickly-with-thonny-ide
+3. Upload all five python files to the ESP32
