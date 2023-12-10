@@ -4,7 +4,6 @@ from machine import Pin, PWM
 # Import constants
 from loko_constants import (
     PWM_FREQUENCY,
-    DEFAULT_BRIGHTNESS_PERCENTAGE,
     MAX_DUTY_CYCLE,
     RGB_LED_RED_GPIO,
     RGB_LED_GREEN_GPIO,
@@ -16,13 +15,13 @@ from loko_constants import (
 class loko_led_driver:
     def __init__(self):
         # Create pwm objects
-        self.ledRed = PWM(RGB_LED_RED_GPIO, freq = PWM_FREQUENCY, duty = MAX_DUTY_CYCLE)
-        self.ledGreen = PWM(RGB_LED_GREEN_GPIO, freq = PWM_FREQUENCY, duty = MAX_DUTY_CYCLE)
-        self.ledBlue = PWM(RGB_LED_BLUE_GPIO, freq = PWM_FREQUENCY, duty = MAX_DUTY_CYCLE)
+        self.__ledRed = PWM(RGB_LED_RED_GPIO, freq = PWM_FREQUENCY, duty = MAX_DUTY_CYCLE)
+        self.__ledGreen = PWM(RGB_LED_GREEN_GPIO, freq = PWM_FREQUENCY, duty = MAX_DUTY_CYCLE)
+        self.__ledBlue = PWM(RGB_LED_BLUE_GPIO, freq = PWM_FREQUENCY, duty = MAX_DUTY_CYCLE)
         
         # Initialize pulse helper variable
-        self.pulse_incrementing = True
-        self.pulse_value = 0
+        self.__pulse_incrementing = True
+        self.__pulse_value = 0
     
     # Calculate duty cycle according to percentage (inverted signal)
     def _percentage_to_duty_cycle(self, percentage):
@@ -36,30 +35,30 @@ class loko_led_driver:
     # Set brighness of provided color
     def set_brightness(self, color, brightness):
         if color == "green":
-            self.ledGreen.duty(self._percentage_to_duty_cycle(brightness))
+            self.__ledGreen.duty(self._percentage_to_duty_cycle(brightness))
         elif color == "red":
-            self.ledRed.duty(self._percentage_to_duty_cycle(brightness))
+            self.__ledRed.duty(self._percentage_to_duty_cycle(brightness))
         elif color == "blue":
-            self.ledBlue.duty(self._percentage_to_duty_cycle(brightness))
+            self.__ledBlue.duty(self._percentage_to_duty_cycle(brightness))
 
     # Simulate pulse step by step with each call
     # Used with timer
     def pulse_helper(self, color, max_percentage):
         # Check if to increment or decrement
-        if self.pulse_incrementing:
+        if self.__pulse_incrementing:
             # Increment value
-            self.pulse_value += 1
+            self.__pulse_value += 1
             # Check if peak was reached
-            if self.pulse_value >= max_percentage:
-                self.pulse_value = max_percentage
-                self.pulse_incrementing = False
+            if self.__pulse_value >= max_percentage:
+                self.__pulse_value = max_percentage
+                self.__pulse_incrementing = False
         else:
             # Decrement value
             self.pulse_value -= 1
             # Check if low was reached
-            if self.pulse_value <= 1:
-                self.pulse_value = 1
-                self.pulse_incrementing = True
+            if self.__pulse_value <= 1:
+                self.__pulse_value = 1
+                self.__pulse_incrementing = True
         
         # Update brightness
-        self.set_brightness(color, self.pulse_value)
+        self.set_brightness(color, self.__pulse_value)
